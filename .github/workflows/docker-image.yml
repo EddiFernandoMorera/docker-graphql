@@ -30,19 +30,20 @@ jobs:
       env:
         DOCKER_USER: ${{ secrets.DOCKER_USER }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      run: |
+        docker login -u $DOCKER_USER -p $DOCKER_PASSWORD        
+
+    - name: Build Docker Image
+      env:
         NEW_VERSION: ${{ steps.version.outputs.version }}
       run: |
-        docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-        echo "New version: $NEW_VERSION"
-        
+        docker build -t efmorerah/docker-graphql:$NEW_VERSION .
+        docker build -t efmorerah/docker-graphql .
 
-    # - name: Build Docker Image
-    #   run: |
-    #     docker build -t efmorerah/docker-graphql:0.0.1 .
-    #     docker build -t efmorerah/docker-graphql .
-
-    # - name: Push Docker Image
-    #   run: |
-    #     docker push efmorerah/docker-graphql:0.0.1
-    #     docker push efmorerah/docker-graphql
+    - name: Push Docker Image
+      env:
+        NEW_VERSION: ${{ steps.version.outputs.version }}
+      run: |
+        docker push efmorerah/docker-graphql:$NEW_VERSION
+        docker push efmorerah/docker-graphql
 
